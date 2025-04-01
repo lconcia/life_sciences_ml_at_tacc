@@ -7,8 +7,9 @@ As we discussed before, on Frontera there are login nodes and compute nodes.
    :target: ./images/hpc_schematic.png
    :alt: HPC System Architecture
 
-We cannot run the applications we need for our research on the login nodes because they require too many resources and will interrupt the work of others. 
-Instead, we must write a short text file containing a list of the resources we need, and containing the command(s) for running the application. 
+We cannot run the applications we need for our research on the login nodes because they are designed as a prep area, where you may edit and manage files, compile code, perform file management, issue transfers, submit new and track existing batch jobs etc. The login nodes provide an interface to the "back-end" compute nodes, where actual computations occur and where research is done. 
+
+To run a job, instead, we must write a short text file containing a list of the resources we need, and containing the job command(s). 
 Then, we submit that text file to a queue to run on compute nodes. This process is called **batch job submission**.
 
 There are several queues available on Frontera. It is important to understand the queue limitations and pick a queue that is appropriate for your job. 
