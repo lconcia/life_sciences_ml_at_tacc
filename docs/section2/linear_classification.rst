@@ -1,11 +1,11 @@
 Classification: A First Look
 ============================
 
-In this module we introduce the classification problem, work with some initial examples, and 
+In this section we introduce the classification problem, work with some initial examples, and 
 describe the training and testing phases involved in creating a classifier. We also 
 take a first look at validation and overfitting. 
 
-By the end of this module, students should be able to:
+By the end of this section, students should be able to:
 
 1. Describe the classification problem. 
 2. Describe at a high level the linear classifier and the perceptron algorithm.
@@ -22,52 +22,50 @@ An ML model that predicts such a dependent variable is called a *classifier*. Th
 An important special case is a *binary classifier* which predicts a dependent variable which takes on just two 
 possible values. That is, a binary classifier is a model which predicts two classes for the dependent variable.
 
-For example, given a person's income and credit card history, a bank might want to predict if they will default.
-The dependent variable here is whether or not the individual will default. There are two possible values:
+For example, given the cellular features of a biopsy, a physician might want to predict if a tumor is benign or malignant.
+The dependent variable here is whether or not the tumor is malignant. There are two possible values:
 
-* Will default
-* Will not default
+* Benign
+* Malignant
 
 These are the two classes of the dependent variable, and an ML model that predicts this variable will thus be called
 a binary classifier. 
 
-Consider the following dataset depicting annual incomes and monthly credit card balances for a set of individuals. 
+Consider the following dataset depicting cell nuclei features from histology images and prognosis. 
 
-.. figure:: ./images/class_income_v_balance.png
+.. figure:: ./images/breast_cancer_pca.png
     :width: 1000px
     :align: center
-    :alt: Income vs Balance
+    :alt: Benign vs Malignant
 
-    Sample data showing annual incomes and monthly credit card balances for a set of individuals. 
-    The individuals who defaulted on their credit card payments are shown in orange, and those 
-    who did not are shown in blue. Citation: [1].
+    Sample data showing principal component analysis on cell nuclei features and tumor classification as benign or malignant.
 
 
 We can use this data to build an ML model for predicting whether an individual will default. The process is 
 as follows:
 
-1. Collect and prepare historical data about income, balance and default status.
+1. Collect and prepare data about nuclei size, shape and texture.
 2. Train a model using some of the prepared data. 
 3. Validate the model using some of the prepared data. 
-4. Deploy the model to predict the default status for new individuals. 
+4. Deploy the model to predict tumor classification for new individuals. 
 
 How might we train a classifier? There are many techniques. The first one we will look at is called *linear 
 classification*. Before we look at some of the details of linear classification, does anyone have an 
-intuition about how one might proceed to determine which individuals will default?
+intuition about how one might proceed to determine which tumors are malignant?
 
-Is the image above suggestive of a way to predict the default status? 
+Is the image above suggestive of a way to predict the tumor type? 
 
 
-.. figure:: ./images/class_income_v_balance_decision_boundary.png 
+.. figure:: ./images/breast_cancer_decision_boundary.png
     :width: 1000px
     :align: center
-    :alt: Income vs Balance
+    :alt: Benign vs Malignant
 
     A linear decision boundary. Data points are classified based on which side of the line they fall. 
 
 One approach is to use a linear equation (i.e., a line) to determine which class a data point belongs 
 to. In the picture above we have drawn one possible line. Points on the left side of the line are 
-classified as "will default" and points on the right are classified as "will not default". 
+classified as "benign" and points on the right are classified as "malignant". 
 
 Linear Classification
 ---------------------
@@ -91,7 +89,7 @@ As the name suggests, with linear classification we define :math:`f(X)` using a 
 
 
 In this case, the decision boundary is linear, :math:`\{ x : mX + b= 0 \}`. An example of a linear 
-decision boundary was drawn in the income versus credit card balance plot above. 
+decision boundary was drawn in the PCA plot above. 
 
 How do we go about finding the optimal choice of :math:`m` and :math:`b`? Here, there are many techniques.
 How well the different techniques perform depends in part on the data. 
@@ -101,7 +99,8 @@ exists a linear decision function that separates all data points that are in cla
 points not in :math:`C`.
 
 Perceptron Algorithm 
-~~~~~~~~~~~~~~~~~~~~
+^^^^^^^^^^^^^^^^^^^^
+
 We'll begin by looking at the Perceptron Algorithm which was originally conceived of by Frank Rosenblatt 
 in his 1956 PhD thesis [2]. For linear classifiers, it can be slow to train, 
 but it can be proven mathematically to always find a correct linear classifier when the data are 
@@ -163,6 +162,7 @@ Gradient Decent can be used to find an optimal :math:`m`.
 
 Linear Classification with Scikit Learn
 ---------------------------------------
+
 Next we look at implementing a linear classifier using the ``sklearn`` package. In this first example, we'll 
 illustrate the techniques on a classic dataset that describes iris flowers. We'll also introduce
 helper functions for splitting data into a training data and testing data and computing the accurary of our
@@ -175,7 +175,8 @@ iris: setosa, virginica and versicolor. The features are: sepal length, sepal wi
 all measured in cm.
 
 Loading the Data
-~~~~~~~~~~~~~~~~
+^^^^^^^^^^^^^^^^
+
 First, let us begin by loading the dataset. We'll use a Jupyter notebook for this portion since we will want 
 to make use of some visualization. 
 
@@ -252,7 +253,8 @@ Note that we have organized the data into the objects ``X`` and ``y`` for the in
 respectively. This is a common convention we will use throughout the course. 
 
 Training the Model
-~~~~~~~~~~~~~~~~~~
+^^^^^^^^^^^^^^^^^^
+
 Let us take a moment to recall the general strategy for working with ML models. 
 
 1. Collect and prepare data with labels.
@@ -331,7 +333,8 @@ The ``clf`` object is the trained model, and it can be used to predict the speci
 ``clf.predict()`` method`. 
 
 Validation 
-~~~~~~~~~~
+^^^^^^^^^^
+
 Now that the model has been trained we can proceed to step 3 -- validation. Our goal here is to compute the 
 accuracy of our model against the test dataset (i.e., the ``test_`` data objects above). We'll also compute 
 the accuracy of the model against the training data to see how they compare. 
@@ -373,7 +376,7 @@ In fact, our model was perfect on both the test and training data! One way to un
 the data -- the Iris dataset is linearly separable, as we will see. 
 
 Additional Properties of the Model
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 * ``clf.classes_``: These are the possible target class values the model is trying to predict. 
 * ``clf.decision_function()``: This function computes the actual decision value for a given `X`
@@ -431,7 +434,7 @@ Examples:
 
 
 Visualizing the Decision Boundary
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 We'll use the ``DecisionBoundaryDisplay`` class from the ``sklearn.inspection`` in conjunction with ``matplotlib``
 to create a visualization of the decision boundary.
@@ -495,7 +498,7 @@ The result should look similar to the following:
     Resulting plot of the linear decision boundary for the Iris dataset. 
 
 Training on the Full Dataset 
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 Let's go back and train on the full dataset with all of the features. 
 
@@ -533,7 +536,8 @@ How does the accuracy compare with the previous version?
 
 
 Visualizing the Confusion Matrix 
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
 A confusion matrix is a useful tool for understanding the performance of a model beyond 
 just the accuracy rate. 
 
@@ -561,74 +565,70 @@ Setosa two times.
 
 
 
-Hands-on Lab: Classifying Spam Email
-------------------------------------
-In this section, we guide you through developing a linear classifier for spam 
-email detection. We'll use the "Spambase" dataset, a classic dataset 
-hosted on the UC Irvine Machine Learning Repository [5].
+Hands-on Lab: Linear Classification of Breast Cancer Malignancy 
+---------------------------------------------------------------
 
-The dataset consists of metadata about a set of emails. A total of 58 attributes 
-are provided for each email. 
+In this section, we guide you through developing a linear classifier for the breast cancer example above.
+We'll use the "load_breast_cancer()" from SciKitLearn datasets module.
 
-The first 48 attributes are of the form ``word_freq_<WORD>``
-for some word, <WORD>. These attributes contain the percentage of words (as a float between 
-0 and 1) in the email that match <WORD>. 
+The dataset consists of features of cell nuclei from a collection of breast cancer biopsies.
 
-Six attributes are of the form ``char_freq_<CHAR>`` for some character, <CHAR>. These 
-attributes contain the the percentage of characters (as a float between 
-0 and 1) in the email that match <CHAR>. 
+There are 30 different features, describing the size, shape, and texture of the cellular nuclei (see `data.feature_names`).
 
-The last three attributes are defined as follows:
-
-* ``capital_run_length_average``: Average length of uninterrupted sequences of capital 
-  letters.
-* ``capital_run_length_longest``: Length of longest uninterrupted sequence of 
-  capital letters. 
-* ``capital_run_length_total``: Sum of the lengths of uninterrupted sequences of 
-  capital letters. (i.e., total number of capital letters in the email)
-
-Finally, a single attribute ``spam`` with values in :math:`\{ 0, 1 \}` is the target
-(dependent) variable. A value of 1 indicates the email was spam while a value of 0
-indicates that it was not spam.  
+Finally, a single binary attribute ``data.target_names`` (benign vs malignant) with values in :math:`\{ 0, 1 \}` is the target
+(dependent) variable. A value of 1 indicates the biopsy was malignant while a value of 0
+indicates that it was benign.  
 
 The lab is structured as a series of exercises. We'll make use of the material above 
 on linear classification as well as previous material on data analysis. We'll also 
 introduce the confusion matrix in Exercise 4. Use a Jupyter notebook to work through 
-the exercises below in class. 
+the exercises below. 
 
-**Exercise 1.** *Getting and Preparing the Data*. To get started, we'll download 
-the Spambase dataset. The dataset is available for download from the 
-UCI Archive `here <https://archive.ics.uci.edu/dataset/94/spambase>`_. The primary 
-dataset is described in a csv file called spambase.data. An auxillory file called 
-spambase.names describes the dataset. 
+**Exercise 1.** *Getting and Preparing the Data*. To get started, we'll import the breast cancer 
+dataset from sklearn
 
-1. Unpack and save the data file to your local machine. Read the data into a Pandas 
-   dataframe.
+.. code-block:: python3 
 
-2. Check and print the number of rows and columns in the dataset. 
+  from sklearn.datasets import load_breast_cancer
 
+  data = load_breast_cancer()
 
-**Exercise 2.** *Data Exploration*.
+1. Examine the features, target, and shape of the dataset as we did with the iris example
 
-1. Compute standard statistics for each of the columns in the dataset, including:
-   count, mean, standard deviation, min and max. 
-
-2. Determine if there are any duplicate rows in the data set. If there are any 
-   duplicate rows, remove them. 
-
-3. Determine if there are any null/missing values in the data set. 
-
-4. Determine how many rows are spam and how many are not spam.  
+2. Set the X and Y variables in preparation for linear regression 
 
 
-**Exercise 3.** *Split and Fit*. 
+.. toggle::
+
+   .. code-block:: python
+
+      print(data.feature_names)
+      print(data.target_names)
+      data.data
+      X = data.data
+      y = data.target
+
+**Exercise 2.** *Split and Fit*. 
 
 1. Split the data into training and test datasets. Make sure your split is 
    reproducible and that it maintains roughly the proportion of spam and non-spam emails.
 
 2. Fit the data to a linear classifier using the Perceptron algorithm. 
 
-**Exercise 4.** *Validation and Assessment*. 
+.. toggle::
+
+   .. code-block:: python
+
+      from sklearn.model_selection import train_test_split
+      X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3, stratify=y, random_state=1)
+
+      from sklearn.linear_model import SGDClassifier
+
+      clf = SGDClassifier(loss="perceptron", alpha=0.01)
+
+      clf.fit(X_train, y_train)
+
+**Exercise 3.** *Validation and Assessment*. 
 
 1. Check the accuracy of your model on the test data set. 
 
@@ -636,10 +636,25 @@ spambase.names describes the dataset.
 
 3. Plot a confusion matrix for your model. How does the model perform with respect to different labels in 
    the target class? Do you think one is more important to minimize? 
+
+.. toggle::
+
+   .. code-block:: python
+
+      from sklearn.metrics import accuracy_score
+      # Check the accuracy on the test data
+      accuracy_test=accuracy_score(y_test, clf.predict(X_test))
+      # Check accuracy on the training data
+      accuracy_train=accuracy_score(y_train, clf.predict(X_train))
+      print(f"Train accuracy: {accuracy_train}; Test accuracy: {accuracy_test}")
+
+      from sklearn.metrics import ConfusionMatrixDisplay
+      cm_display = ConfusionMatrixDisplay.from_estimator(clf, X_test, y_test,cmap=plt.cm.Blues,normalize=None)
    
 
 References and Additional Resources
 -----------------------------------
+
 1. UC Berkeley CS189/289A: Introduction to Machine Learning. https://people.eecs.berkeley.edu/~jrs/papers/machlearn.pdf
 2. Professor’s perceptron paved the way for AI – 60 years too soon. https://news.cornell.edu/stories/2019/09/professors-perceptron-paved-way-ai-60-years-too-soon
 3. R. A. Fisher (1936). "The use of multiple measurements in taxonomic problems". Annals of Eugenics. 7 (2): 179–188. doi:10.1111/j.1469-1809.1936.tb02137.x. hdl:2440/15227

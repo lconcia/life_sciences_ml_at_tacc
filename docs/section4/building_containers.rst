@@ -107,9 +107,9 @@ Since this code is an image classifier, we will need some images to classify. Yo
 
   $ pwd
   /Users/username/image-classifier/
-  $ wget https://raw.githubusercontent.com/TACC/life_sciences_ml_at_tacc/main/docs/images/dog.jpg
-  $ wget https://raw.githubusercontent.com/TACC/life_sciences_ml_at_tacc/main/docs/images/strawberries.jpg
-  $ wget https://raw.githubusercontent.com/TACC/life_sciences_ml_at_tacc/main/docs/images/automotive.jpg
+  $ wget https://raw.githubusercontent.com/TACC/life_sciences_ml_at_tacc/main/docs/section4/images/dog.jpg
+  $ wget https://raw.githubusercontent.com/TACC/life_sciences_ml_at_tacc/main/docs/section4/images/strawberries.jpg
+  $ wget https://raw.githubusercontent.com/TACC/life_sciences_ml_at_tacc/main/docs/section4/images/automotive.jpg
 
 Finally, your folder should look like this:
 
@@ -206,7 +206,7 @@ developing with on your local workstation? If not, make sure to install the
 correct version of python.
 
 The next step is to install the dependencies for our code. In this case, we
-need to install the `torch` and `torchvision` packages from `PyTorch <https://pytorch.org/get-started/locally/>`_.
+need to install the `torch` and `torchvision` packages from `PyTorch <https://pytorch.org/get-started/locally/>`__.
 We are going to install version 2.5.1:
 
 .. code-block:: console
@@ -228,7 +228,7 @@ However, we can make it executable and add it to the user's `PATH`.
 
 Now test with the following:
 
-.. figure:: ../images/dog.jpg
+.. figure:: ./images/dog.jpg
    :width: 400
    :align: center
 
