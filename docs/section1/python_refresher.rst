@@ -47,44 +47,43 @@ Data Types and Variables
 ------------------------
 
 The most common data types in Python are similar to other programming languages.
-For this class, we probably only need to worry about **integers**, **floats**,
-**booleans**, and **strings**.
+For this class, we’ll focus on:
 
-Assign some values to variables by doing the following:
+- **int** – integers like `3`, `42`
+- **float** – decimal numbers like `3.14`, `0.01`
+- **bool** – `True` or `False`
+- **str** – strings like `"hello"`
 
-.. code-block:: python3
-
-   >>> my_int = 5
-   >>> my_float = 5.0
-   >>> my_bool = True      # or False, notice capital letters
-   >>> my_string = 'Hello, world!'
-
-In Python, you don't have to declare type. Python figures out the type
-automatically. Check using the ``type()`` function:
+Assign values to variables:
 
 .. code-block:: python3
 
-   >>> type(my_int)
-   <class 'int'>
-   >>> type(my_float)
-   <class 'float'>
-   >>> type(my_bool)
-   <class 'bool'>
-   >>> type(my_string)
-   <class 'str'>
+   >>> x = 5
+   >>> y = 3.14
+   >>> name = "Alice"
+   >>> flag = True
 
-Print the values of each variable using the ``print()`` function:
+In Python, you don't have to declare type. Python figures out the type automatically.
+You can check the type using the ``type()`` function:
 
 .. code-block:: python3
 
-   >>> print(my_int)
-   5
-   >>> print('my_int')
-   my_int
+   >>> print(type(x))     # int
+   >>> print(type(y))     # float
+   >>> print(type(name))  # str
+   >>> print(type(flag))  # bool
+   
+The ``print()`` function is used to show output on the screen. You can print numbers, 
+text, or the result of expressions.
 
-(Try printing the others as well). And, notice what happens when we print with
-and without single quotes? What is the difference between ``my_int`` and
-``'my_int'``?
+Notice what happens when we print with and without single quotes?
+
+.. code-block:: python3
+
+   >>> print(x)        # prints the number 5
+   >>> print("x")      # prints the letter x
+
+**Converting between types**
 
 You can convert between types using a few different functions. For example, when
 you read in data from a file, numbers are often read as strings. Thus, you may
@@ -92,21 +91,19 @@ want to convert the string to integer or float as appropriate:
 
 .. code-block:: python3
 
-   >>> str(my_int)      # convert int to string
-   >>> str(my_float)    # convert float to string
-   >>> int(my_string)   # convert string to int
-   >>> float(my_string) # convert string to float
-   >>>
-   >>> value = 5
-   >>> print(value)
-   5
-   >>> type(value)
-   <class 'int'>
-   >>> new_value = str(value)
-   >>> print(new_value)
-   '5'
-   >>> type(new_value)
-   <class 'str'>
+   >>> a = 10
+   >>> b = str(a)         # convert int to string
+   >>> c = "20"
+   >>> d = int(c)         # convert string to int
+
+   >>> print(b)           # '10'
+   >>> print(d)           # 20
+   >>> print(type(b))     # str
+   >>> print(type(d))     # int
+
+.. tip::
+
+   Not all strings can be turned into numbers. Try ``int("hello")`` and see what happens!
 
 
 Arithmetic Operations
@@ -136,8 +133,8 @@ Try a few things to see how they work:
    >>> print(10%9)
    >>> print(3+5*2)
    >>> print('hello' + 'world')
-   >>> print('some' + 1)
-   >>> print('number' * 5)
+   >>> print('hello' + 5)
+   >>> print('hello' * 5)
 
 Also, carefully consider how arithmetic options may affect type:
 
@@ -166,22 +163,22 @@ Declare a list with square brackets as follows:
 
 .. code-block:: python3
 
-   >>> my_shape_list = ['circle', 'heart', 'triangle', 'square']
-   >>> type(my_shape_list)
+   >>> my_list = ['thing1', 'thing2', 'thing3', 'thing4', 'thing5']
+   >>> type(my_list)
    <class 'list'>
-   >>> print(my_shape_list)
-   ['circle', 'heart', 'triangle', 'square']
+   >>> print(my_list)
+   ['thing1', 'thing2', 'thing3', 'thing4', 'thing5']
 
 Access individual list elements:
 
 .. code-block:: python3
 
-   >>> print(my_shape_list[0])
-   circle
-   >>> type(my_shape_list[0])
+   >>> print(my_list[0])
+   thing1
+   >>> type(my_list[0])
    <class 'str'>
-   >>> print(my_shape_list[2])
-   triangle
+   >>> print(my_list[2])
+   thing3
 
 Create an empty list and add things to it:
 
@@ -204,28 +201,28 @@ to demonstrate:
 
 .. code-block:: python3
 
-   >>> my_big_list = my_shape_list + my_number_list
+   >>> my_big_list = my_list + my_number_list
    >>> print(my_big_list)
-   ['circle', 'heart', 'triangle', 'square', 5, 6, 2, 4]
+   ['thing1', 'thing2', 'thing3', 'thing4', 'thing5', 5, 6, 2, 4]
 
 Another way to access the contents of lists is by slicing. Slicing supports a
-start index, stop index, and step taking the form: ``mylist[start:stop:step]``.
+start index, stop index, and step taking the form: ``my_list[start:stop:step]``.
 Only the first colon is required. If you omit the start, stop, or :step, it is
 assumed you mean the beginning, end, and a step of 1, respectively. Here are
 some examples of slicing:
 
 .. code-block:: python3
 
-   >>> mylist = ['thing1', 'thing2', 'thing3', 'thing4', 'thing5']
-   >>> print(mylist[0:2])     # returns the first two things
+   >>> my_list = ['thing1', 'thing2', 'thing3', 'thing4', 'thing5']
+   >>> print(my_list[0:2])     # returns the first two things
    ['thing1', 'thing2']
-   >>> print(mylist[:2])      # if you omit the start index, it assumes the beginning
+   >>> print(my_list[:2])      # if you omit the start index, it assumes the beginning
    ['thing1', 'thing2']
-   >>> print(mylist[-2:])     # returns the last two things (omit the stop index and it assumes the end)
+   >>> print(my_list[-2:])     # returns the last two things (omit the stop index and it assumes the end)
    ['thing4', 'thing5']
-   >>> print(mylist[:])       # returns the entire list
+   >>> print(my_list[:])       # returns the entire list
    ['thing1', 'thing2', 'thing3', 'thing4', 'thing5']
-   >>> print(mylist[::2])     # return every other thing (step = 2)
+   >>> print(my_list[::2])     # return every other thing (step = 2)
    ['thing1', 'thing3', 'thing5']
 
 .. note::
@@ -236,40 +233,68 @@ some examples of slicing:
    index, will depend on what you want to do with the data.
 
 
-**Dictionaries** are another data structure in Python that contain key:value
-pairs. They are always unordered, they cannot contain duplicate keys, and they
-can be modified. Create a new dictionary using curly brackets:
+**Dictionaries** in Python store data as **key:value** pairs. They are:
+
+- Unordered
+- Mutable (you can change values)
+- Keys must be unique
+
+Let’s create a simple English-to-Spanish dictionary:
 
 .. code-block:: python3
 
-   >>> my_shape_dict = {
-   ...   'most_favorite': 'square',
-   ...   'least_favorite': 'circle',
-   ...   'pointiest': 'triangle',
-   ...   'roundest': 'circle'
+   >>> eng2spa = {
+   ...   'one': 'uno',
+   ...   'two': 'dos',
+   ...   'three': 'tres'
    ... }
-   >>> type(my_shape_dict)
+   >>> type(eng2spa)
    <class 'dict'>
-   >>> print(my_shape_dict)
-   {'most_favorite': 'square', 'least_favorite': 'circle', 'pointiest': 'triangle', 'roundest': 'circle'}
-   >>> print(my_shape_dict['most_favorite'])
-   square
+   >>> print(eng2spa)
+   {'one': 'uno', 'two': 'dos', 'three': 'tres'}
 
-As your preferences change over time, so to can values stored in dictionaries:
+You can retrieve values using the **key**:
 
 .. code-block:: python3
 
-   >>> my_shape_dict['most_favorite'] = 'rectangle'
-   >>> print(my_shape_dict['most_favorite'])
-   rectangle
+   >>> print(eng2spa['two'])
+   dos
 
-Add new key:value pairs to the dictionary as follows:
+But you **cannot** use the value to look up the key directly:
 
 .. code-block:: python3
 
-   >>> my_shape_dict['funniest'] = 'squircle'
-   >>> print(my_shape_dict['funniest'])
-   squircle
+   >>> eng2spa['dos']
+   Traceback (most recent call last):
+     ...
+   KeyError: 'dos'
+
+This shows that dictionaries are **one-directional**: they map from keys to values 
+(not the other way around).
+
+You can **change the value** associated with a key. For example, let’s say we decide 
+to update the translation for `'one'`:
+
+.. code-block:: python3
+
+   >>> eng2spa['one'] = 'UNO'
+   >>> print(eng2spa['one'])
+   UNO
+
+You can also **add a new key:value pair**:
+
+.. code-block:: python3
+
+   >>> eng2spa['four'] = 'cuatro'
+   >>> print(eng2spa['four'])
+   cuatro
+
+Now the dictionary contains:
+
+.. code-block:: python3
+
+   >>> print(eng2spa)
+   {'one': 'UNO', 'two': 'dos', 'three': 'tres', 'four': 'cuatro'}
 
 
 Conditionals and Control Loops
@@ -346,12 +371,15 @@ The ``break`` statement can also be used to escape loops:
    >>> i = 0
    >>>
    >>> while (i < 10):
-   ...     print( f'i = {i}' )
-   ...     i = i + 1
    ...     if (i==5):
    ...         break
-   ...     else:
-   ...         continue
+   ...     print( f'i = {i}' )
+   ...     i = i + 1
+
+.. note::
+
+   Try replacing ``break`` with ``continue`` and observe how the behavior changes.  
+   While ``break`` exits the loop entirely when the condition is met, ``continue`` skips the current iteration and moves on to the next one.
 
 
 **For loops** in Python are useful when you need to execute the same set of
