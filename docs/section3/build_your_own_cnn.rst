@@ -58,7 +58,7 @@ Step 0: Check GPU Availability and TensorFlow Version
 
 Before training deep learning models, it's important to check whether TensorFlow can access the GPU on your machine. Training on a GPU is significantly faster than on a CPU, especially for large image datasets. 
 
-If you've followed the setup instructions in the `TACC Deep Learning Tutorials README <https://github.com/kbeavers/tacc-deep-learning-tutorials>`_, and you've run the ``install_kernel.sh`` script on **Frontera**, you should now be running this notebook inside a containerized Jupyter kernel that includes:
+If you've followed the setup instructions from `Introduction to Systems and Data: Set up for Tutorials <https://life-sciences-ml-at-tacc.readthedocs.io/en/latest/section1/set_up_for_tutorials.html>`_, you should now be running this notebook inside a containerized Jupyer kernel that includes:
 
  - TensorFlow v. 2.13.0 with GPU support
  - CUDA libraries compatible with the system
@@ -76,6 +76,9 @@ This cell will confirm that your environment is correctly configured (TIP: Make 
 
     # Print TensorFlow version
     print(tf.__version__)
+
+    # Set random seed for reproducibility
+    tf.random.set_seed(123)
 
 You should see the following output:
 
@@ -311,9 +314,6 @@ This structured DataFrame is essential for training with Keras' ``flow_from_data
     # Create a DataFrame with columns for filepath and label
     df = pd.DataFrame(data, columns=["filepath", "label"])
 
-    # (Optional) Shuffle the DataFrame to randomize order of images
-    df = df.sample(frac=1, random_state=123).reset_index(drop=True)
-
     # Show a preview of the DataFrame
     df.head()
     
@@ -351,9 +351,8 @@ If the dataset is imbalanced (i.e., some classes have far more images than other
     ## counts.values: The number of images for each class
     ## counts.index: The class labels (e.g., 'ACER', 'CNAT', 'MCAV')
     ## autopct='%1.1f%%': Display the percentage of images for each class
-    ## startangle=90: Start the pie chart at a 90-degree angle (rotated 90 degrees from the default)
     ## colors: The colors to use for each class (defined earlier)
-    axes[0].pie(counts.values, labels=counts.index, autopct='%1.1f%%', startangle=90, colors=colors)
+    axes[0].pie(counts.values, labels=counts.index, autopct='%1.1f%%', colors=colors)
     axes[0].set_title('Class Distribution (Percentage)')
 
     # Creates a Bar chart in the second plot position (axes[1])
@@ -389,9 +388,6 @@ We'll display a grid of randomly selected images, grouped by class.
 
     from tensorflow.keras.preprocessing.image import load_img
     import random
-
-    # Set seed for reproducibility
-    random.seed(123)
 
     # Set the number of images to display per class
     samples_per_class = 3
@@ -431,10 +427,7 @@ We'll display a grid of randomly selected images, grouped by class.
 
 |
 
-**Thought Challenge**: Try changing the ``random.seed`` value a few times to view different images from the dataset. What do you notice? Take a moment to write down your observations.
-
 *Remember: the quality of a machine learning model is decided largely by the quality of the dataset it was trained on!*
-
 
 Step 3: Split the Dataset and Handle Class Imbalance
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -468,17 +461,17 @@ This is called **stratified sampling**.
     # First, split the original dataset into training + test sets
     train_df, test_df = train_test_split(
         df,                            # This is our DataFrame from step 1.5
-        test_size=____,                # How much of the data should be in the test set?
-        stratify=____,                 # Ensure each split maintains original class distribution
-        random_state=123               # Set the random seed for reproducibility
+        test_size=____,                # Keep 20% of the data in the test set
+        stratify=df["label"],          # Ensure each split maintains original class distribution
+        random_state=123               # Set random seed for reproducibility
     )
 
     # Then, split the training set into training + validation sets
     ____, ____ = train_test_split(
         ____,                          # What goes here?
-        test_size=____,                # How much of the data should be in the validation set?
+        test_size=____,                # Keep 20% of the training data in the validation set
         stratify=____,                 # Ensure each split maintains original class distribution
-        random_state=123               # Set the random seed for reproducibility
+        random_state=123               # Set random seed for reproducibility
     )
 
     # Print split sizes
@@ -487,20 +480,6 @@ This is called **stratified sampling**.
     print(f"Train: {len(train_df)} images ({len(train_df)/total:.2%})")
     print(f"Validation: {len(val_df)} images ({len(val_df)/total:.2%})")
     print(f"Test: {len(test_df)} images ({len(test_df)/total:.2%})")
-
-**Thought Challenge**: Will changing the ``random_state`` value in the ``train_test_split`` function change your model's performance? Why or why not?
-
-.. toggle:: Click to show
-
-    **Answer**: Yes – even though stratification preserves class balance, changing ``random_state`` changes *which individual images* go into the training set. For example:
-
-    - With ``random_state=123``, the model might learn from images A, B, and C
-    - With ``random_state=456``, the model might learn from images D, E, and F 
- 
-    Since each image has unique properties (lighting, orientation, scale, background, etc.), the model will learn slightly different features depending on the exact training set.
-    As a result, its internal weights and final accuracy may vary. 
-
-    Try running the full training pipeline multiple times with different ``random_state`` values. Do your metrics stay stable? What might that tell you about the robustness of your model?
 
 
 3.2 Compute Class Weights
@@ -641,19 +620,22 @@ All generators return batches of preprocessed image tensors and their correspond
         batch_size=BATCH_SIZE,      # Number of images per batch
         class_mode='categorical',   # One-hot encode the labels
         color_mode='rgb',           # Use RGB color channels
-        shuffle=True                # Randomize order of images
+        shuffle=True,                # Randomize order of images
+        seed=123                    # Set random seed for reproducibility
     )
 
     # Validation generator
     val_generator = val_datagen.flow_from_dataframe(
         # ... same parameters as above ...
-        shuffle=False               # Keep original order for validation
+        shuffle=False,               # Keep original order for validation
+        seed=123                    # Set random seed for reproducibility
     )
 
     # Test generator
     test_generator = test_datagen.flow_from_dataframe(
         # ... same parameters as above ...
-        shuffle=False               # Keep original order for testing
+        shuffle=False,               # Keep original order for testing
+        seed=123                    # Set random seed for reproducibility
     )
 
 
@@ -718,6 +700,7 @@ Let's display a few images from the training geneator along with their decoded c
 
 |
 
+
 **Thought Challenge**: Look carefully at the images displayed above.
 Try running the code cell multiple times and changing the code to display images from the validation and test generators. 
 What do you notice about the images that you didn't see before (in Step 3)?
@@ -756,7 +739,7 @@ Below, we define a model that consists of three main parts:
 
     # Build a custom CNN architecture
     cnn_model = Sequential([
-        # Input layer: matches image shape
+        # Input layer: matches image shape (height, width, channels)
         Input(shape=(___, ___, __)),
 
         # Convolution Block 1
@@ -805,42 +788,44 @@ Finally, let's display our model architecture and parameter count:
 
     cnn_model.summary()
 
-**Model: "sequential"**
+.. code-block:: python-console
 
-+--------------------------------+----------------------+-------------+
-| Layer (type)                   | Output Shape         | Param #     |
-+================================+======================+=============+
-| conv2d (Conv2D)                | (None, 224, 224, 32) | 896         |
-+--------------------------------+----------------------+-------------+
-| average_pooling2d              | (None, 112, 112, 32) | 0           |
-| (AveragePooling2D)             |                      |             |
-+--------------------------------+----------------------+-------------+
-| conv2d_1 (Conv2D)              | (None, 112, 112, 64) | 18,496      |
-+--------------------------------+----------------------+-------------+
-| average_pooling2d_1            | (None, 56, 56, 64)   | 0           |
-| (AveragePooling2D)             |                      |             |
-+--------------------------------+----------------------+-------------+
-| conv2d_2 (Conv2D)              | (None, 56, 56, 128)  | 73,856      |
-+--------------------------------+----------------------+-------------+
-| average_pooling2d_2            | (None, 28, 28, 128)  | 0           |
-| (AveragePooling2D)             |                      |             |
-+--------------------------------+----------------------+-------------+
-| flatten (Flatten)              | (None, 100352)       | 0           |
-+--------------------------------+----------------------+-------------+
-| dense (Dense)                  | (None, 128)          | 12,845,184  |
-+--------------------------------+----------------------+-------------+
-| dense_1 (Dense)                | (None, 64)           | 8,256       |
-+--------------------------------+----------------------+-------------+
-| dense_2 (Dense)                | (None, 3)            | 195         |
-+--------------------------------+----------------------+-------------+
+    Model: "sequential"
 
-  **Total params**: 12,946,883 (49.39 MB)
+    +--------------------------------+----------------------+-------------+
+    | Layer (type)                   | Output Shape         | Param #     |
+    +================================+======================+=============+
+    | conv2d (Conv2D)                | (None, 224, 224, 32) | 896         |
+    +--------------------------------+----------------------+-------------+
+    | average_pooling2d              | (None, 112, 112, 32) | 0           |
+    | (AveragePooling2D)             |                      |             |
+    +--------------------------------+----------------------+-------------+
+    | conv2d_1 (Conv2D)              | (None, 112, 112, 64) | 18,496      |
+    +--------------------------------+----------------------+-------------+
+    | average_pooling2d_1            | (None, 56, 56, 64)   | 0           |
+    | (AveragePooling2D)             |                      |             |
+    +--------------------------------+----------------------+-------------+
+    | conv2d_2 (Conv2D)              | (None, 56, 56, 128)  | 73,856      |
+    +--------------------------------+----------------------+-------------+
+    | average_pooling2d_2            | (None, 28, 28, 128)  | 0           |
+    | (AveragePooling2D)             |                      |             |
+    +--------------------------------+----------------------+-------------+
+    | flatten (Flatten)              | (None, 100352)       | 0           |
+    +--------------------------------+----------------------+-------------+
+    | dense (Dense)                  | (None, 128)          | 12,845,184  |
+    +--------------------------------+----------------------+-------------+
+    | dense_1 (Dense)                | (None, 64)           | 8,256       |
+    +--------------------------------+----------------------+-------------+
+    | dense_2 (Dense)                | (None, 3)            | 195         |
+    +--------------------------------+----------------------+-------------+
 
-  **Trainable params**: 12,946,883 (49.39 MB)
+    Total params: 12,946,883 (49.39 MB)
 
-  **Non-trainable params**: 0 (0.00 B)
+    Trainable params: 12,946,883 (49.39 MB)
 
-**Thought Challenge**: Break down the model summary above, layer by layer. 
+    Non-trainable params: 0 (0.00 B)
+
+**Thought Challenge**: Describe our CNN model architecture layer-by-layer.
 
 .. toggle:: Click to show
 
@@ -871,13 +856,16 @@ Finally, let's display our model architecture and parameter count:
 Calculating Parameters in CNNs
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Let's break down the parameter calculation for our model.
+For a convolutional layer, the number of parameters is determined by the size of the kernels, the number of input channels, and the number of kernels:
 
-The formula for calculating the number of parameters in a convolutional layer is:
+.. math::
 
-``(kernel_height x kernel_width x input_channels x filters) + filters``
+    \text{Parameters} = (\text{Kernel width} \times \text{Kernel height} \times \text{Input channels} + 1) \times \text{Kernels}
 
-    - the ``+ filters`` part is for the bias term (one per filter)
+- ``Kernel width x Kernel height``: The size of each kernel (e.g., a 3x3 kernel has 9 weights per input channel)
+- ``Input channels``: The number of channels in the input image (e.g., 3 for RGB images)
+- ``+1``: Each kernel also has 1 bias term.
+- ``kernels``: The number of kernels you want to use. This is how many output channels you'll get from this layer. Each kernel is applied independently and learns different features. 
 
 **Thought Challenge**: What is the formula for calculating the number of parameters in a dense layer? Can you correctly calculate the total number of parameters in our model? Write down each step of your calculation. 
 
@@ -887,38 +875,36 @@ The formula for calculating the number of parameters in a convolutional layer is
 
     1. First Conv2D:
 
-     * 3x3 kernel, 3 input channels (RGB), 32 filters
-     * (3 x 3 x 3 x 32) + 32 = 896 parameters
+     * 3x3 kernel, 3 input channels (RGB), 32 kernels
+     * (3 x 3 x 3 + 1) x 32 = 896 parameters
 
     2. Second Conv2D:
 
-     * 3x3 kernel, 32 input channels, 64 filters
-     * ( 3 x 3 x 32 x 64) + 64 = 18,496 parameters
+     * 3x3 kernel, 32 input channels, 64 kernels
+     * (3 x 3 x 32 + 1) x 64 = 18,496 parameters
 
     3. Third Conv2D:
 
-     * 3x3 kernel, 64 input channels, 128 filters
-     * (3 x 3 x 64 x 128) + 128 = 73,856 parameters
+     * 3x3 kernel, 64 input channels, 128 kernels
+     * (3 x 3 x 64 + 1) x 128 = 73,856 parameters
 
     **Dense Layers**
         
-    Formula: ``(inputs x perceptrons) + perceptrons``
+    Formula: ``(Input units x Output units) + Output units``
 
-    - the ``+ perceptrons`` part is for the bias term (one per perceptron)
+    4. First Dense:
 
-    1. First Dense:
-
-     * 100352 inputs (flattened), 128 perceptrons
+     * 100352 Input units (flattened), 128 Output units (one per perceptron)
      * (100352 x 128) + 128 = 12,845,184 parameters
 
-    2. Second Dense:
+    5. Second Dense:
 
-     * 128 inputs, 64 perceptrons
+     * 128 Input units, 64 Output units 
      * (128 x 64) + 64 = 8,256 parameters
 
-    3. Output Dense:
+    6. Output Dense:
     
-     * 64 inputs, 3 perceptrons (one per coral species)
+     * 64 Input units, 3 Output units
      * (64 x 3) + 3 = 195 parameters
 
 
@@ -949,18 +935,18 @@ Example output:
 .. code-block:: python-console
 
     Epoch 1/15
-    9/9 [==============================] - 14s 2s/step - loss: 1.0338 - accuracy: 0.4737 - val_loss: 1.0179 - val_accuracy: 0.5075
+    9/9 [==============================] - 5s 391ms/step - loss: 1.1136 - accuracy: 0.3195 - val_loss: 1.0908 - val_accuracy: 0.3731
     Epoch 2/15
-    9/9 [==============================] - 9s 1s/step - loss: 1.0466 - accuracy: 0.4436 - val_loss: 1.0264 - val_accuracy: 0.4627
+    9/9 [==============================] - 4s 468ms/step - loss: 1.1017 - accuracy: 0.2932 - val_loss: 1.0911 - val_accuracy: 0.3582
     Epoch 3/15
-    9/9 [==============================] - 8s 905ms/step - loss: 1.0224 - accuracy: 0.4624 - val_loss: 0.9770 - val_accuracy: 0.5373
+    9/9 [==============================] - 4s 464ms/step - loss: 1.0936 - accuracy: 0.4023 - val_loss: 1.0823 - val_accuracy: 0.4627
     Epoch 4/15
-    9/9 [==============================] - 11s 1s/step - loss: 1.0178 - accuracy: 0.4624 - val_loss: 1.0147 - val_accuracy: 0.4776
+    9/9 [==============================] - 4s 468ms/step - loss: 1.0937 - accuracy: 0.3534 - val_loss: 1.0762 - val_accuracy: 0.4328
     Epoch 5/15
-    9/9 [==============================] - 9s 899ms/step - loss: 1.0065 - accuracy: 0.4699 - val_loss: 0.9736 - val_accuracy: 0.5075
+    9/9 [==============================] - 4s 464ms/step - loss: 1.0869 - accuracy: 0.3985 - val_loss: 1.0671 - val_accuracy: 0.4627
     ...
     Epoch 15/15
-    9/9 [==============================] - 10s 1s/step - loss: 0.9717 - accuracy: 0.5038 - val_loss: 1.0668 - val_accuracy: 0.3731
+    9/9 [==============================] - 4s 472ms/step - loss: 1.0374 - accuracy: 0.4662 - val_loss: 0.9806 - val_accuracy: 0.5672
 
 
 Visualizing Training History
@@ -1024,21 +1010,7 @@ We use the ``cnn_history`` object returned by the ``fit()`` method to plot the t
 
 The plots above show the training and validation accuracy/loss over 15 epochs.
 
-**Thought Challenge**: What do you notice about the training and validation accuracy and loss? What does this tell you about the model's learning performance (i.e. overfitting, underfitting, healthy learning)? Write down your answer before checking our interpretation below.
-
-.. toggle:: Click to show
-
-    **Accuracy (Left Plot)**
-     - Training accuracy starts around 47% and gradually improves to about 50% by the end of training
-     - Validation accuracy shows higher volatility - it remains above training accuracy for most epochs (reaching ~58% at epoch 11), but drops dramatically in the final epoch to ~37%
-     - The gap between training and validation accuracy varies significantly throughout training
-
-    **Loss (Right Plot)**
-     - Training loss fluctuates but generally decreases over time from ~1.03 to ~0.97
-     - Validation loss is generally lower than training loss through most epochs, showing some instability
-     - There's a concerning spike in validation loss at the final epoch, jumping to ~1.07
-
-    **Interpretation**: The model shows signs of both underfitting and instability. The relatively low accuracy suggests the model struggles to learn effective patterns from the data. The final drop in validation accuracy paired with the spike in validation loss indicates potential overfitting or training instability in later epochs. The erratic validation metrics suggest the model may be sensitive to the specific examples in each validation batch.
+**Thought Challenge**: What do you notice about the training and validation accuracy and loss? What does this tell you about the model's learning performance (i.e. overfitting, underfitting, healthy learning)?
 
 
 Step 7: Evaluate the Model on the Test Set
@@ -1065,8 +1037,8 @@ Example output:
 
 .. code-block:: text
 
-    Test Accuracy: 34.52%
-    Test Loss: 1.1921
+    Test Accuracy: 44.05%
+    Test Loss: 1.0581
 
 Our model correctly classifies the test images about 35% of the time, and our loss is still quite high.
 While these numbers provide a snapshot of performance, they don't tell the whole story. Let's dig deeper with a confusion matrix.
@@ -1138,13 +1110,13 @@ Example output:
     Classification Report:
                   precision    recall  f1-score   support
 
-            ACER       0.35      0.93      0.51        27
-            CNAT       0.38      0.12      0.18        26
-            MCAV       0.20      0.03      0.06        31
+            ACER       0.50      0.52      0.51        27
+            CNAT       0.42      0.50      0.46        26
+            MCAV       0.40      0.32      0.36        31
 
-        accuracy                           0.35        84
-       macro avg       0.31      0.36      0.25        84
-    weighted avg       0.30      0.35      0.24        84
+        accuracy                           0.44        84
+       macro avg       0.44      0.45      0.44        84
+    weighted avg       0.44      0.44      0.44        84
 
 Click below to see a brief explanation of the metrics in the classification report.
 
@@ -1341,25 +1313,19 @@ Example Output:
 .. code-block:: text
 
     Epoch 1/15
-    9/9 [==============================] - 14s 1s/step - loss: 4.4430 - accuracy: 0.5188 - val_loss: 0.2631 - val_accuracy: 0.9104 - lr: 1.0000e-04
+    9/9 [==============================] - 7s 379ms/step - loss: 4.3120 - accuracy: 0.5263 - val_loss: 0.4430 - val_accuracy: 0.8657 - lr: 1.0000e-04
     Epoch 2/15
-    9/9 [==============================] - 7s 855ms/step - loss: 0.6687 - accuracy: 0.8271 - val_loss: 0.4558 - val_accuracy: 0.8806 - lr: 1.0000e-04
+    9/9 [==============================] - 5s 503ms/step - loss: 0.7271 - accuracy: 0.8346 - val_loss: 0.3540 - val_accuracy: 0.9104 - lr: 1.0000e-04
     Epoch 3/15
-    9/9 [==============================] - 6s 602ms/step - loss: 0.7846 - accuracy: 0.8308 - val_loss: 0.2493 - val_accuracy: 0.9254 - lr: 1.0000e-04
+    9/9 [==============================] - 4s 479ms/step - loss: 0.7825 - accuracy: 0.8120 - val_loss: 0.4158 - val_accuracy: 0.8507 - lr: 1.0000e-04
     Epoch 4/15
-    9/9 [==============================] - 7s 768ms/step - loss: 0.3062 - accuracy: 0.9023 - val_loss: 0.2185 - val_accuracy: 0.9403 - lr: 1.0000e-04
+    9/9 [==============================] - 4s 480ms/step - loss: 0.4168 - accuracy: 0.8684 - val_loss: 0.3532 - val_accuracy: 0.8806 - lr: 1.0000e-04
     Epoch 5/15
-    9/9 [==============================] - 8s 881ms/step - loss: 0.3746 - accuracy: 0.8947 - val_loss: 0.1510 - val_accuracy: 0.9552 - lr: 1.0000e-04
+    9/9 [==============================] - 4s 474ms/step - loss: 0.5239 - accuracy: 0.8835 - val_loss: 0.4578 - val_accuracy: 0.8806 - lr: 1.0000e-04
     Epoch 6/15
-    9/9 [==============================] - 6s 718ms/step - loss: 0.3481 - accuracy: 0.9023 - val_loss: 0.1624 - val_accuracy: 0.9552 - lr: 1.0000e-04
+    9/9 [==============================] - 4s 470ms/step - loss: 0.4025 - accuracy: 0.8835 - val_loss: 1.0588 - val_accuracy: 0.8209 - lr: 1.0000e-04
     Epoch 7/15
-    9/9 [==============================] - 7s 790ms/step - loss: 0.2909 - accuracy: 0.9323 - val_loss: 0.4297 - val_accuracy: 0.8955 - lr: 1.0000e-04
-    Epoch 8/15
-    9/9 [==============================] - 7s 749ms/step - loss: 0.2124 - accuracy: 0.9474 - val_loss: 0.4730 - val_accuracy: 0.8955 - lr: 1.0000e-04
-    Epoch 9/15
-    9/9 [==============================] - 6s 643ms/step - loss: 0.2254 - accuracy: 0.9474 - val_loss: 0.3024 - val_accuracy: 0.9254 - lr: 5.0000e-05
-    Epoch 10/15
-    9/9 [==============================] - 8s 861ms/step - loss: 0.2725 - accuracy: 0.9323 - val_loss: 0.4518 - val_accuracy: 0.8955 - lr: 5.0000e-05
+    9/9 [==============================] - 4s 488ms/step - loss: 0.5346 - accuracy: 0.8496 - val_loss: 0.2890 - val_accuracy: 0.9104 - lr: 1.0000e-04
 
 
 Visualizing Training History
@@ -1378,6 +1344,8 @@ Refer back to Section 1: Step 6 – *Visualizing Training History* for a refresh
 .. image:: ./images/VGG19-history.png
    :width: 800px
    :align: center
+
+|
 
 **Thought Challenge**: Compare the performance of our VGG19 model to our previous CNN model. What are some major differences in the training curves?
 
@@ -1405,10 +1373,10 @@ Example output:
 
 .. code-block:: text
 
-    Test Accuracy: 92.86%
-    Test Loss: 0.2990
+    Test Accuracy: 86.90%
+    Test Loss: 0.9072
 
-Our model correctly classifies the test images about 93% of the time. What an improvement!
+Our model correctly classifies the test images about 87% of the time. What an improvement!
 
 
 Visualize Predictions with a Confusion Matrix
@@ -1477,13 +1445,13 @@ Example output:
     Classification Report (VGG19):
                precision    recall  f1-score   support
 
-         ACER       1.00      1.00      1.00        27
-         CNAT       0.83      0.96      0.89        26
-         MCAV       0.96      0.84      0.90        31
+         ACER       1.00      0.89      0.94        27
+         CNAT       0.76      0.96      0.85        26
+         MCAV       0.89      0.77      0.83        31
 
-     accuracy                           0.93        84
-    macro avg       0.93      0.93      0.93        84
- weighted avg       0.93      0.93      0.93        84
+     accuracy                           0.87        84
+    macro avg       0.88      0.87      0.87        84
+ weighted avg       0.88      0.87      0.87        84
 
 **Thought Challenge**: Compare the performance of our VGG19 model to our previous CNN model. What are some major differences in the classification report? Are there still any problematic classes that the model is struggling with? If so, what do you think is causing this?
 

@@ -77,12 +77,30 @@ and reproducible.
    .. code-block:: console
    
       # On the command line:
-      $ pip install --user requests pandas
+      $ pip3 install --user requests pandas
       
       - or -
       
       # In a Jupyter notebook:
-      ! pip install --user requests pandas
+      ! pip3 install --user requests pandas
+
+
+.. warning::
+
+   Frontera is getting pretty old! The ``requests`` library (rather, one of the dependencies of the
+   ``requests`` library - ``urllib3``) may have compatibility issues with Python on Frontera. You
+   may need to install an older version of ``urllib3`` in order to get this to work:
+
+   .. code-block:: console
+
+      # On the command line:
+      $ pip3 install --user "urllib3<=2.0"
+      
+      - or -
+      
+      # In a Jupyter notebook:
+      ! pip3 install --user "urllib3<=2.0"
+
 
 This method avoids the need for manual downloading or unzipping and ensures your code can be run
 from any location with internet access.
@@ -109,9 +127,9 @@ column is a **Series**, each row is indexed (blue box), and column headers serve
    
    .. code-block:: python
    
-      import pandas as pd
-      data = pd.read_csv('Austin_Animal_Center_Outcomes.csv')
-      display(data)
+      >>> import pandas as pd
+      >>> data = pd.read_csv('Austin_Animal_Center_Outcomes.csv')
+      >>> display(data)
 
 
 Understanding the Structure
@@ -576,16 +594,16 @@ Exercise: Which Day Has the Most and Least Outcomes?
     .. code-block:: text
 
         weekday_name
-        Monday       178
-        Tuesday      146
-        Wednesday    126
-        Sunday       100
-        Thursday      96
-        Friday        68
-        Saturday      61
+        Tuesday      6807
+        Saturday     6605
+        Friday       6209
+        Monday       6180
+        Wednesday    5952
+        Thursday     5735
+        Sunday       5647
         Name: count, dtype: int64
 
-    From the result, we can see that Mondays had the most outcomes, while Saturdays had the fewest
+    From the result, we can see that Tuesdays had the most outcomes, while Sundays had the fewest
     in this filtered dataset. This kind of temporal insight is often valuable when planning staffing
     or outreach for shelters.
 
@@ -616,7 +634,7 @@ The result might look like:
 
 .. code-block:: text
 
-    3762 days 00:00:00
+    4233 days 07:05:00
 
 This tells us the filtered dataset covers approximately 10.3 years of outcomes for dogs.
 

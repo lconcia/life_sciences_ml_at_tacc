@@ -15,7 +15,7 @@ Basic HPC System Architecture
 -----------------------------
 
 As you prepare to use TACC systems for this workshop, it is important to understand the basic
-architecture. We can think of an HPC systeam as a very large and complicated laboratory instrument.
+architecture. We can think of an HPC system as a very large and complicated laboratory instrument.
 Users need to learn how to:
 
 * Interface with it / push the right buttons (Linux)
